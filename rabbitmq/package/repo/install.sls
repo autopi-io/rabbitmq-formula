@@ -15,7 +15,7 @@ include:
 
 rabbitmq-package-repo-pkg-deps:
   pkg.installed:
-    - name: python{{ grains.pythonversion[0] or '' }}-apt
+    - name: python{{ (grains.pythonversion[0] or '') if not grains['osfinger'].startswith('Ubuntu-18') else '' }}-apt
     - require_in:
       - pkgrepo: rabbitmq-package-repo-erlang
       - pkgrepo: rabbitmq-package-repo-rabbitmq

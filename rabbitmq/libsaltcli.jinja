@@ -3,7 +3,7 @@
 
 {#- Get the relevant values from the `opts` dict #}
 {%- set opts_cli = opts.get('__cli', '') %}
-{%- set opts_masteropts_cli = opts | traverse('__master_opts__:__cli', '') %}
+{%- set opts_masteropts_cli = opts.get('__master_opts__', {}).get('__cli', '') %}
 
 {#- Determine the type of salt command being run #}
 {%- if opts_cli == 'salt-minion' %}

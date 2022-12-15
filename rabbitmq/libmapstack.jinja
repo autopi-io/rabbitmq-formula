@@ -106,7 +106,7 @@
 {%-   do salt["log.debug"](
         log_prefix
         ~ "built-in configuration:\n"
-        ~ {"values": defaults | traverse("values")}
+        ~ {"values": defaults["values"]}
         | yaml(False)
       ) %}
 
@@ -116,25 +116,8 @@
 {#-       1. the `value` #}
 {#-       2. the `defaults` #}
 {#-       3. the built-in #}
-{%-       set strategy = matcher.value
-          | traverse(
-            "strategy",
-            defaults
-            | traverse(
-              "strategy",
-              "smart"
-            )
-          ) %}
-{%-       set merge_lists = matcher.value
-          | traverse(
-            "merge_lists",
-            defaults
-            | traverse(
-              "merge_lists",
-              False
-            )
-          )
-          | to_bool %}
+{%-       set strategy = matcher.value.get("strategy", defaults.get("strategy", "smart")) if matcher.value is mapping else defaults.get("strategy", "smart") %}
+{%-       set merge_lists = matcher.value.get("merge_lists", defaults.get("merge_lists", False)) if matcher.value is mapping else defaults.get("merge_lists", False) | to_bool %}
 
 {%-       if matcher.type in query_map.keys() %}
 {#-         No value is an empty list, must be a dict for `stack.update` #}
@@ -253,31 +236,13 @@
 {#-             1. the `value` #}
 {#-             2. the `defaults` #}
 {#-             3. the built-in #}
-{%-             set strategy = yaml_values
-                  | traverse(
-                    "strategy",
-                    defaults
-                    | traverse(
-                      "strategy",
-                      "smart"
-                    )
-                  ) %}
-{%-             set merge_lists = yaml_values
-                  | traverse(
-                    "merge_lists",
-                    defaults
-                    | traverse(
-                      "merge_lists",
-                      False
-                    )
-                  )
-                  | to_bool %}
+{%-             set strategy = yaml_values.get("values", defaults.get("strategy", "smart")) %}
+{%-             set merge_lists = yaml_values.get("merge_lists", defaults.get("merge_lists", False)) | to_bool %}
 {%-             do stack.update(
                   {
                     "values": salt["slsutil.merge"](
                       stack["values"],
-                      yaml_values
-                      | traverse("values", {}),
+                      yaml_values.get("values", {}),
                       strategy=strategy,
                       merge_lists=merge_lists,
                     )
