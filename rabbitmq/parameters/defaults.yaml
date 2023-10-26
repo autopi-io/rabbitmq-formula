@@ -41,7 +41,7 @@ values:
       - /usr/local/bin/rabbitmq-env
       - /usr/local/bin/rabbitmq-plugins
       - /var/run/rabbitmq
-    service: /usr/lib/systemd/system
+    service: /lib/systemd/system
 
   rootgroup: root
   retry_option:
